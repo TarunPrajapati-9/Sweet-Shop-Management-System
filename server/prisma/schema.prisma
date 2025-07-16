@@ -16,4 +16,43 @@ model Sweet {
   quantity  Float
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  
+  // Relation to OrderItem
+  orderItems OrderItem[]
+}
+
+model Order {
+  id        String   @id // Unique order ID like ORD001
+  token     Int      @unique
+  status    OrderStatus @default(Pending)
+  total     Float
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  // Relation to OrderItem
+  items     OrderItem[]
+}
+
+model OrderItem {
+  id       Int   @id @default(autoincrement())
+  name     String
+  price    Float
+  quantity Float
+  
+  // Relations
+  orderId  String
+  order    Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  
+  sweetId  Int
+  sweet    Sweet  @relation(fields: [sweetId], references: [id])
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum OrderStatus {
+  Pending
+  Preparing
+  Ready
+  Completed
 }
