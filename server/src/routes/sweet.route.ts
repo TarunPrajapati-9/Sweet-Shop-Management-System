@@ -8,8 +8,6 @@ import {
 // create a router instance for sweets
 const sweetRouter = Router();
 
-// all routes related to sweets
-
 //GET ROUTES
 sweetRouter.get("/", getSweets); // Define the route to get all sweets
 sweetRouter.get("/stock"); // Define the route to get sweets in stock or out of stock

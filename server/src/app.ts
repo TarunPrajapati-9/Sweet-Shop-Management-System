@@ -1,6 +1,7 @@
 import { Application, Request, Response } from "express";
 import express from "express";
 import sweetRouter from "./routes/sweet.route";
+import purchaseRouter from "./routes/purchase.route";
 
 // Create an Express application
 const app: Application = express();
@@ -10,6 +11,7 @@ app.use(express.json());
 
 // Router for handling API routes
 app.use("/sweets", sweetRouter);
+app.use("/purchases", purchaseRouter);
 
 // root route to test server
 app.get("/", (req: Request, res: Response) => {
