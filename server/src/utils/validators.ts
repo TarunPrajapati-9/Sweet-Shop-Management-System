@@ -37,8 +37,8 @@ export const isValidSweet = (sweet: Partial<Sweet>): string | null => {
   }
 
   // Check quantity validation
-  if (quantity < 0) {
-    return "quantity must be greater than or equal to 0";
+  if (quantity <= 0) {
+    return "Quantity must be greater than 0";
   }
 
   // Check if category is valid

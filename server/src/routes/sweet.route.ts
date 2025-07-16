@@ -3,6 +3,8 @@ import {
   getSweets,
   addSweet,
   deleteSweet,
+  updateSweet,
+  restockSweet,
 } from "../controllers/sweet.controller";
 
 // create a router instance for sweets
@@ -17,11 +19,11 @@ sweetRouter.get("/", getSweets); // Define the route to get all sweets
 // POST ROUTES
 sweetRouter.post("/", addSweet); // Define the route to add a new sweet
 
-// // PUT ROUTES
-// sweetRouter.put("/:id"); // Define the route to update major fields of sweet by ID (if needed)
+// PUT ROUTES
+sweetRouter.put("/:id", updateSweet); // Define the route to update major fields of sweet by ID
 
-// // PATCH ROUTES
-// sweetRouter.patch("/:id/restock"); // Define the route to update stock of a sweet by ID (if needed)
+// PATCH ROUTES
+sweetRouter.patch("/:id/restock", restockSweet); // Define the route to update stock of a sweet by ID
 
 // DELETE ROUTES
 sweetRouter.delete("/:id", deleteSweet); // Define the route to delete a sweet by ID
