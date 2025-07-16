@@ -1,0 +1,25 @@
+{
+  "name": "sweet-shop-management-system",
+  "version": "1.0.0",
+  "description": "Sweet Shop Management System Backend",
+  "main": "server.ts",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon server.ts"
+  },
+  "author": "Your Name",
+  "devDependencies": {
+    "@types/bun": "latest",
+    "@types/express": "^5.0.3",
+    "@types/node": "^24.0.14",
+    "eslint": "^9.31.0",
+    "nodemon": "^3.1.10",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.2"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.0",
+    "express": "^5.1.0"
+  }
+}
