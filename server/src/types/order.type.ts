@@ -10,7 +10,7 @@ export interface OrderItem {
 export interface Order {
   id: string; // e.g., ORD001
   token: number;
-  status: "Pending" | "Preparing" | "Ready" | "Completed";
+  status: "Pending" | "Completed";
   items: OrderItem[];
   total: number;
   createdAt: string;
@@ -26,14 +26,14 @@ export interface CreateOrderRequest {
 }
 
 export interface UpdateOrderStatusRequest {
-  status: "Pending" | "Preparing" | "Ready" | "Completed";
+  status: "Pending" | "Completed";
 }
 
 // Prisma types for database operations
 export interface OrderWithItems {
   id: string;
   token: number;
-  status: "Pending" | "Preparing" | "Ready" | "Completed";
+  status: "Pending" | "Completed";
   total: number;
   createdAt: Date;
   updatedAt: Date;
