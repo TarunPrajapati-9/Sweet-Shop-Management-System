@@ -1,12 +1,11 @@
 import { Request, Response } from "express";
-import sweets from "../data/sweetDB";
+import { prisma } from "../utils/client";
 import { createResponse } from "../utils/response";
-import { Sweet, validCategories } from "../types/sweet.type";
 import { isValidSweet } from "../utils/validators";
 
 export const getSweets = async (req: Request, res: Response): Promise<void> => {
   try {
-    const items = sweets; //fetch items
+    const items = await prisma.sweet.findMany(); //fetch items from database
 
     //return the sweets data with custom response format
     res
@@ -28,18 +27,37 @@ export const addSweet = async (req: Request, res: Response): Promise<void> => {
       return;
     }
 
-    const { name, category, price, quantity }: Sweet = req.body;
+    const { name, category, price, quantity } = req.body;
 
-    const newSweet: Sweet = {
-      id: sweets.length + 1, // Simple ID generation
-      name: name.trim(), // Trim whitespace from name
-      category,
-      price,
-      quantity,
-    };
+    // Check if a sweet with the same name already exists
+    const existingSweet = await prisma.sweet.findFirst({
+      where: {
+        name: {
+          equals: name.trim(),
+          mode: "insensitive", // Case-insensitive comparison (Kaju = kaju = KAJU)
+        },
+      },
+    });
 
-    // Add the new sweet to the database (in-memory array)
-    sweets.push(newSweet);
+    if (existingSweet) {
+      res
+        .status(409)
+        .json(
+          createResponse(false, "A sweet with this name already exists", {})
+        );
+      return;
+    }
+
+    // Create the new sweet in the database using Prisma
+    const newSweet = await prisma.sweet.create({
+      data: {
+        name: name.trim(), // Trim whitespace from name
+        category,
+        price,
+        quantity,
+      },
+    });
+
     res
       .status(201)
       .json(createResponse(true, "Sweet added successfully", newSweet));
@@ -56,15 +74,22 @@ export const deleteSweet = async (
 ): Promise<void> => {
   try {
     const sweetId = parseInt(req.params.id, 10);
-    const sweetIndex = sweets.findIndex((s) => s.id === sweetId);
 
-    if (sweetIndex === -1) {
+    // Check if the sweet exists
+    const existingSweet = await prisma.sweet.findUnique({
+      where: { id: sweetId },
+    });
+
+    if (!existingSweet) {
       res.status(404).json(createResponse(false, "Sweet not found", {}));
       return;
     }
 
-    // Remove the sweet from the database
-    sweets.splice(sweetIndex, 1);
+    // Delete the sweet from the database
+    await prisma.sweet.delete({
+      where: { id: sweetId },
+    });
+
     res
       .status(200)
       .json(createResponse(true, "Sweet deleted successfully", {}));
