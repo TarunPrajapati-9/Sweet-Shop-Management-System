@@ -1,6 +1,9 @@
 import { Router } from "express";
 import {
   getSweets,
+  getSweetById,
+  checkStock,
+  searchSweets,
   addSweet,
   deleteSweet,
   updateSweet,
@@ -11,10 +14,9 @@ import {
 const sweetRouter = Router();
 
 //GET ROUTES
-sweetRouter.get("/", getSweets); // Define the route to get all sweets
-// sweetRouter.get("/stock"); // Define the route to get sweets in stock or out of stock
-// sweetRouter.get("/search/"); // Define the route to get sweets by search query
-// sweetRouter.get("/:id"); // Define the route to get a sweet by ID (if needed)
+sweetRouter.get("/", searchSweets); // Define the route to get all sweets or search with query parameters
+sweetRouter.get("/check-stock", checkStock); // Define the route to get sweets in stock or out of stock
+sweetRouter.get("/:id", getSweetById); // Define the route to get a sweet by ID
 
 // POST ROUTES
 sweetRouter.post("/", addSweet); // Define the route to add a new sweet
