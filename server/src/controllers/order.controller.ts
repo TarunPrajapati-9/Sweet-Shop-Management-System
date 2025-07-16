@@ -270,7 +270,7 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
         .json(createResponse(false, "Status is required", null));
     }
 
-    const validStatuses = ["Pending", "Preparing", "Ready", "Completed"];
+    const validStatuses = ["Pending", "Completed"];
     if (!validStatuses.includes(status)) {
       return res
         .status(400)
