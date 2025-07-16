@@ -1,14 +1,17 @@
 import { Request, Response } from "express";
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "../utils/client";
 import {
   CreateOrderRequest,
   UpdateOrderStatusRequest,
 } from "../types/order.type";
 import { createResponse } from "../utils/response";
 
-const prisma = new PrismaClient();
-
-// Generate unique order ID (e.g., ORD001)
+/**
+ * Generates a unique order ID in the format ORD001, ORD002, etc.
+ * Implements retry logic for concurrent safety and fallback mechanism.
+ *
+ * @returns Promise<string> - Unique order ID
+ */
 const generateOrderId = async (): Promise<string> => {
   let attempts = 0;
   const maxAttempts = 10;
@@ -51,16 +54,26 @@ const generateOrderId = async (): Promise<string> => {
   return `ORD${timestamp}`;
 };
 
-// Create a new order
-export const createOrder = async (req: Request, res: Response) => {
+/**
+ * Creates a new order with the provided items and token.
+ * Validates stock availability and creates order in a transaction.
+ *
+ * @param req - Express request object containing order data
+ * @param res - Express response object
+ */
+export const createOrder = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { token, items }: CreateOrderRequest = req.body;
 
     // Validate input
     if (!token || !items || items.length === 0) {
-      return res
+      res
         .status(400)
         .json(createResponse(false, "Token and items are required", null));
+      return;
     }
 
     // Check if token is already in use
@@ -69,9 +82,8 @@ export const createOrder = async (req: Request, res: Response) => {
     });
 
     if (existingOrder) {
-      return res
-        .status(400)
-        .json(createResponse(false, "Token already in use", null));
+      res.status(400).json(createResponse(false, "Token already in use", null));
+      return;
     }
 
     // Verify all sweets exist and have sufficient stock
@@ -81,16 +93,17 @@ export const createOrder = async (req: Request, res: Response) => {
     });
 
     if (sweets.length !== sweetIds.length) {
-      return res
+      res
         .status(404)
         .json(createResponse(false, "One or more sweets not found", null));
+      return;
     }
 
     // Check stock availability
     for (const item of items) {
       const sweet = sweets.find((s) => s.id === item.sweetId);
       if (!sweet || sweet.quantity < item.quantity) {
-        return res
+        res
           .status(400)
           .json(
             createResponse(
@@ -99,6 +112,7 @@ export const createOrder = async (req: Request, res: Response) => {
               null
             )
           );
+        return;
       }
     }
 
@@ -165,8 +179,14 @@ export const createOrder = async (req: Request, res: Response) => {
   }
 };
 
-// Get all orders
-export const getOrders = async (req: Request, res: Response) => {
+/**
+ * Retrieves all orders with their items and sweet details.
+ * Orders are returned in descending order by creation date.
+ *
+ * @param req - Express request object
+ * @param res - Express response object
+ */
+export const getOrders = async (req: Request, res: Response): Promise<void> => {
   try {
     const orders = await prisma.order.findMany({
       include: {
@@ -188,8 +208,16 @@ export const getOrders = async (req: Request, res: Response) => {
   }
 };
 
-// Get order by ID
-export const getOrderById = async (req: Request, res: Response) => {
+/**
+ * Retrieves a specific order by its ID with all related data.
+ *
+ * @param req - Express request object containing order ID in params
+ * @param res - Express response object
+ */
+export const getOrderById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
 
@@ -205,9 +233,8 @@ export const getOrderById = async (req: Request, res: Response) => {
     });
 
     if (!order) {
-      return res
-        .status(404)
-        .json(createResponse(false, "Order not found", null));
+      res.status(404).json(createResponse(false, "Order not found", null));
+      return;
     }
 
     res.json(createResponse(true, "Order retrieved successfully", order));
@@ -219,17 +246,24 @@ export const getOrderById = async (req: Request, res: Response) => {
   }
 };
 
-// Get order by token
-export const getOrderByToken = async (req: Request, res: Response) => {
+/**
+ * Retrieves an order by its token number.
+ *
+ * @param req - Express request object containing token in params
+ * @param res - Express response object
+ */
+export const getOrderByToken = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { token } = req.params;
 
     // Validate token is a valid number
     const tokenNumber = parseInt(token);
     if (isNaN(tokenNumber) || tokenNumber < 0) {
-      return res
-        .status(404)
-        .json(createResponse(false, "Order not found", null));
+      res.status(404).json(createResponse(false, "Order not found", null));
+      return;
     }
 
     const order = await prisma.order.findUnique({
@@ -244,9 +278,8 @@ export const getOrderByToken = async (req: Request, res: Response) => {
     });
 
     if (!order) {
-      return res
-        .status(404)
-        .json(createResponse(false, "Order not found", null));
+      res.status(404).json(createResponse(false, "Order not found", null));
+      return;
     }
 
     res.json(createResponse(true, "Order retrieved successfully", order));
@@ -258,23 +291,29 @@ export const getOrderByToken = async (req: Request, res: Response) => {
   }
 };
 
-// Update order status
-export const updateOrderStatus = async (req: Request, res: Response) => {
+/**
+ * Updates the status of an existing order.
+ *
+ * @param req - Express request object containing order ID and new status
+ * @param res - Express response object
+ */
+export const updateOrderStatus = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
   try {
     const { id } = req.params;
     const { status }: UpdateOrderStatusRequest = req.body;
 
     if (!status) {
-      return res
-        .status(400)
-        .json(createResponse(false, "Status is required", null));
+      res.status(400).json(createResponse(false, "Status is required", null));
+      return;
     }
 
     const validStatuses = ["Pending", "Completed"];
     if (!validStatuses.includes(status)) {
-      return res
-        .status(400)
-        .json(createResponse(false, "Invalid status", null));
+      res.status(400).json(createResponse(false, "Invalid status", null));
+      return;
     }
 
     const order = await prisma.order.update({
@@ -293,9 +332,8 @@ export const updateOrderStatus = async (req: Request, res: Response) => {
   } catch (error: any) {
     console.error("Error updating order status:", error);
     if (error.code === "P2025") {
-      return res
-        .status(404)
-        .json(createResponse(false, "Order not found", null));
+      res.status(404).json(createResponse(false, "Order not found", null));
+      return;
     }
     res
       .status(500)

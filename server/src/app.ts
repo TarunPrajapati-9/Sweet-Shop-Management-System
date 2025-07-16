@@ -1,10 +1,14 @@
 import { Application, Request, Response } from "express";
 import express from "express";
+import cors from "cors";
 import sweetRouter from "./routes/sweet.route";
 import orderRouter from "./routes/order.route";
 
 // Create an Express application
 const app: Application = express();
+
+// Enable CORS
+app.use(cors());
 
 // Middleware to parse JSON bodies
 app.use(express.json());
