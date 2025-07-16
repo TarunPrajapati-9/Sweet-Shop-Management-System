@@ -49,3 +49,28 @@ export const addSweet = async (req: Request, res: Response): Promise<void> => {
       .json(createResponse(false, "Internal Server Error", { error }));
   }
 };
+
+export const deleteSweet = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const sweetId = parseInt(req.params.id, 10);
+    const sweetIndex = sweets.findIndex((s) => s.id === sweetId);
+
+    if (sweetIndex === -1) {
+      res.status(404).json(createResponse(false, "Sweet not found", {}));
+      return;
+    }
+
+    // Remove the sweet from the database
+    sweets.splice(sweetIndex, 1);
+    res
+      .status(200)
+      .json(createResponse(true, "Sweet deleted successfully", {}));
+  } catch (error) {
+    res
+      .status(500)
+      .json(createResponse(false, "Internal Server Error", { error }));
+  }
+};
