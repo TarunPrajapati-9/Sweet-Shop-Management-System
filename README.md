@@ -12,6 +12,9 @@
 
 </div>
 
+🔗 **Live Project:** [Visit Now](https://sweet-shop-management-system-three.vercel.app/)
+
+
 ##  Table of Contents
 
 - [ Features](#-features)
