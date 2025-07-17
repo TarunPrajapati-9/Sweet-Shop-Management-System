@@ -30,6 +30,9 @@ import { getSweets } from "@/lib/dataGetter";
 import { addSweet } from "@/lib/dataPoster";
 import { editSweet, restockSweet } from "@/lib/dataPutter";
 import { deleteSweet } from "@/lib/dataDeleter";
+import { useOwnerAuth } from "@/hooks/useOwnerAuth";
+import { PasswordLogin } from "@/components/PasswordLogin";
+import Link from "next/link";
 
 // Types
 interface Sweet {
@@ -68,6 +71,12 @@ const categoryDisplayNames: Record<string, string> = {
 };
 
 export default function SweetShopManagement() {
+  // All hooks must be called at the top level
+  const {
+    isAuthenticated,
+    isLoading: authLoading,
+    authenticate,
+  } = useOwnerAuth();
   const [sweets, setSweets] = useState<Sweet[]>([]);
   const [filteredSweets, setFilteredSweets] = useState<Sweet[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -260,6 +269,24 @@ export default function SweetShopManagement() {
     return { label: "In Stock", variant: "default" as const };
   };
 
+  // Handle authentication states
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 bg-gradient-to-r from-purple-500 to-pink-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-spin">
+            <span className="text-white font-bold text-xl">🍭</span>
+          </div>
+          <p className="text-gray-600">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <PasswordLogin onAuthenticate={authenticate} />;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 to-amber-50">
       <div className="container mx-auto p-4">
@@ -274,20 +301,32 @@ export default function SweetShopManagement() {
                 Manage your sweet inventory with ease
               </p>
             </div>
-            <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-              <DialogTrigger asChild>
-                <Button className="bg-orange-600 hover:bg-orange-700">
-                  <Plus className="w-4 h-4 mr-2" />
-                  Add New Sweet
+            <div className="flex items-center space-x-4">
+              <Link href="/">
+                <Button variant="outline" size="sm">
+                  Back to Shop
                 </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Add New Sweet</DialogTitle>
-                </DialogHeader>
-                <SweetForm onSubmit={handleAddSweet} isPending={isPending} />
-              </DialogContent>
-            </Dialog>
+              </Link>
+              <Link href="/orders">
+                <Button variant="outline" size="sm">
+                  Orders
+                </Button>
+              </Link>
+              <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
+                <DialogTrigger asChild>
+                  <Button className="bg-orange-600 hover:bg-orange-700">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add New Sweet
+                  </Button>
+                </DialogTrigger>
+                <DialogContent className="max-w-md">
+                  <DialogHeader>
+                    <DialogTitle>Add New Sweet</DialogTitle>
+                  </DialogHeader>
+                  <SweetForm onSubmit={handleAddSweet} isPending={isPending} />
+                </DialogContent>
+              </Dialog>
+            </div>
           </div>
         </div>
 
