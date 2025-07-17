@@ -14,7 +14,7 @@ export const OrderSuccess: React.FC<OrderSuccessProps> = ({
   onStartNewOrder,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
       <Card className="w-full max-w-md mx-4 text-center">
         <CardContent className="p-8">
           <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -32,7 +32,7 @@ export const OrderSuccess: React.FC<OrderSuccessProps> = ({
           </div>
           <Button
             onClick={onStartNewOrder}
-            className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+            className="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700"
           >
             Place New Order
           </Button>

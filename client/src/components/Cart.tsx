@@ -34,7 +34,7 @@ export const Cart: React.FC<CartProps> = ({
       <SheetTrigger asChild>
         <Button
           size="lg"
-          className="relative bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
+          className="relative bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700"
         >
           <ShoppingCart className="w-5 h-5 mr-2" />
           View Order
@@ -98,7 +98,7 @@ export const Cart: React.FC<CartProps> = ({
                 </div>
                 <div className="flex justify-between items-center text-xl font-bold">
                   <span>Total Price:</span>
-                  <span className="text-pink-600">
+                  <span className="text-orange-600">
                     ₹{totalPrice.toFixed(2)}
                   </span>
                 </div>

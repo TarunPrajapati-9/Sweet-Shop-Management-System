@@ -11,17 +11,19 @@ import { createResponse } from "../utils/response";
  */
 const serializeOrder = (order: any) => {
   if (!order) return order;
-  
+
   return {
     ...order,
     token: Number(order.token), // Convert BigInt to number
     items: order.items?.map((item: any) => ({
       ...item,
-      sweet: item.sweet ? {
-        ...item.sweet,
-        // Convert any BigInt fields in sweet if needed
-      } : item.sweet
-    }))
+      sweet: item.sweet
+        ? {
+            ...item.sweet,
+            // Convert any BigInt fields in sweet if needed
+          }
+        : item.sweet,
+    })),
   };
 };
 
@@ -194,7 +196,9 @@ export const createOrder = async (
 
     res
       .status(201)
-      .json(createResponse(true, "Order created successfully", serializedOrder));
+      .json(
+        createResponse(true, "Order created successfully", serializedOrder)
+      );
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).json(createResponse(false, "Failed to create order", null));
@@ -222,9 +226,11 @@ export const getOrders = async (req: Request, res: Response): Promise<void> => {
     });
 
     // Serialize all orders for JSON response
-    const serializedOrders = orders.map(order => serializeOrder(order));
+    const serializedOrders = orders.map((order) => serializeOrder(order));
 
-    res.json(createResponse(true, "Orders retrieved successfully", serializedOrders));
+    res.json(
+      createResponse(true, "Orders retrieved successfully", serializedOrders)
+    );
   } catch (error) {
     console.error("Error getting orders:", error);
     res
@@ -265,7 +271,9 @@ export const getOrderById = async (
     // Serialize the order for JSON response
     const serializedOrder = serializeOrder(order);
 
-    res.json(createResponse(true, "Order retrieved successfully", serializedOrder));
+    res.json(
+      createResponse(true, "Order retrieved successfully", serializedOrder)
+    );
   } catch (error) {
     console.error("Error getting order:", error);
     res
@@ -313,7 +321,9 @@ export const getOrderByToken = async (
     // Serialize the order for JSON response
     const serializedOrder = serializeOrder(order);
 
-    res.json(createResponse(true, "Order retrieved successfully", serializedOrder));
+    res.json(
+      createResponse(true, "Order retrieved successfully", serializedOrder)
+    );
   } catch (error) {
     console.error("Error getting order:", error);
     res
@@ -362,7 +372,9 @@ export const updateOrderStatus = async (
     // Serialize the order for JSON response
     const serializedOrder = serializeOrder(order);
 
-    res.json(createResponse(true, "Order status updated successfully", serializedOrder));
+    res.json(
+      createResponse(true, "Order status updated successfully", serializedOrder)
+    );
   } catch (error: any) {
     console.error("Error updating order status:", error);
     if (error.code === "P2025") {

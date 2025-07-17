@@ -8,8 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "@/hooks/use-toast";
-import { useQuery, useMutation } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { getOrders, getOrderByToken } from "@/lib/dataGetter";
+import { updateOrderStatus } from "@/lib/dataPutter";
+import { OrderStatusUpdate } from "@/components/OrderStatusUpdate";
 import Link from "next/link";
 
 // Types based on the API response
@@ -47,6 +49,8 @@ export default function OrdersPage() {
   const [searchToken, setSearchToken] = useState("");
   const [displayOrders, setDisplayOrders] = useState<Order[]>([]);
   const [isSearchMode, setIsSearchMode] = useState(false);
+
+  const queryClient = useQueryClient();
 
   // Fetch all orders initially
   const { data: ordersData, isLoading } = useQuery({
@@ -89,6 +93,44 @@ export default function OrdersPage() {
     },
   });
 
+  // Update order status mutation
+  const { mutate: updateStatusMutate, isPending: isStatusUpdating } =
+    useMutation({
+      mutationFn: ({ orderId, status }: { orderId: string; status: string }) =>
+        updateOrderStatus(orderId, status),
+      onSuccess: (response) => {
+        if (response?.success) {
+          toast({
+            title: "Status Updated!",
+            description: "Order status has been updated successfully.",
+          });
+          // Invalidate and refetch orders
+          queryClient.invalidateQueries({ queryKey: ["orders"] });
+
+          // If in search mode, refresh the search results
+          if (isSearchMode && searchToken) {
+            const tokenNumber = parseInt(searchToken.trim());
+            if (!isNaN(tokenNumber)) {
+              searchByTokenMutate(tokenNumber);
+            }
+          }
+        } else {
+          toast({
+            title: "Update Failed",
+            description: response?.message || "Failed to update order status.",
+            variant: "destructive",
+          });
+        }
+      },
+      onError: () => {
+        toast({
+          title: "Update Failed",
+          description: "Failed to update order status. Please try again.",
+          variant: "destructive",
+        });
+      },
+    });
+
   // Use all orders when not in search mode
   const orders = isSearchMode
     ? displayOrders
@@ -103,7 +145,7 @@ export default function OrdersPage() {
       case "pending":
         return <Clock className="w-6 h-6 text-yellow-500" />;
       default:
-        return <Package className="w-6 h-6 text-gray-500" />;
+        return <Clock className="w-6 h-6 text-yellow-500" />;
     }
   };
 
@@ -114,7 +156,7 @@ export default function OrdersPage() {
       case "pending":
         return "bg-yellow-100 text-yellow-800 text-lg px-4 py-2";
       default:
-        return "bg-gray-100 text-gray-800 text-lg px-4 py-2";
+        return "bg-yellow-100 text-yellow-800 text-lg px-4 py-2";
     }
   };
 
@@ -141,6 +183,10 @@ export default function OrdersPage() {
     searchByTokenMutate(tokenNumber);
   };
 
+  const handleStatusUpdate = (orderId: string, newStatus: string) => {
+    updateStatusMutate({ orderId, status: newStatus });
+  };
+
   const showAllOrders = () => {
     setIsSearchMode(false);
     setSearchToken("");
@@ -156,9 +202,9 @@ export default function OrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-md border-b border-pink-200">
+      <header className="bg-white/90 backdrop-blur-md border-b border-orange-200">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
@@ -169,8 +215,8 @@ export default function OrdersPage() {
                 </Button>
               </Link>
               <div className="flex items-center space-x-2">
-                <Package className="w-8 h-8 text-pink-600" />
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-pink-600 to-purple-600 bg-clip-text text-transparent">
+                <Package className="w-8 h-8 text-orange-600" />
+                <h1 className="text-3xl font-bold text-orange-900">
                   Order Status
                 </h1>
               </div>
@@ -200,7 +246,7 @@ export default function OrdersPage() {
                 onClick={searchByToken}
                 disabled={isPending}
                 size="lg"
-                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 px-8"
+                className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 px-8"
               >
                 {isPending ? "Searching..." : "Check Status"}
               </Button>
@@ -263,11 +309,19 @@ export default function OrdersPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <Badge className={getStatusColor(order.status)}>
-                        {order.status}
-                      </Badge>
-                      <p className="text-sm text-gray-600 mt-2">
+                    <div className="text-right space-y-2">
+                      <div className="flex items-center space-x-2">
+                        <Badge className={getStatusColor(order.status)}>
+                          {order.status}
+                        </Badge>
+                        <OrderStatusUpdate
+                          orderId={order.id}
+                          currentStatus={order.status}
+                          onStatusUpdate={handleStatusUpdate}
+                          isUpdating={isStatusUpdating}
+                        />
+                      </div>
+                      <p className="text-sm text-gray-600">
                         {formatDate(order.createdAt)}
                       </p>
                     </div>

@@ -57,7 +57,7 @@ export default function SweetKiosk() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-indigo-50">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       <KioskHeader>
         <Cart
           cart={cart}
@@ -113,7 +113,7 @@ export default function SweetKiosk() {
             {filtered.map((sweet) => (
               <Card
                 key={sweet.id}
-                className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-pink-300 bg-white"
+                className="group hover:shadow-xl transition-all duration-300 border-2 hover:border-orange-300 bg-white"
               >
                 <CardHeader className="pb-4">
                   <div className="flex items-start justify-between">
@@ -121,16 +121,16 @@ export default function SweetKiosk() {
                       <h3 className="font-bold text-xl mb-2 text-gray-800">
                         {sweet.name}
                       </h3>
-                      <Badge className="bg-gradient-to-r from-pink-500 to-purple-600 text-white">
+                      <Badge className="bg-gradient-to-r from-orange-500 to-amber-600 text-white">
                         {categoryDisplayNames[sweet.category] || sweet.category}
                       </Badge>
                     </div>
                     <div className="text-right">
-                      <div className="text-2xl font-bold text-pink-600">
+                      <div className="text-2xl font-bold text-orange-600">
                         ₹{sweet.price}
                       </div>
                       <div className="text-sm text-gray-500">
-                        {sweet.quantity} KG available
+                        {sweet.quantity} KG or Litre available
                       </div>
                     </div>
                   </div>
@@ -145,7 +145,7 @@ export default function SweetKiosk() {
                     onClick={() => addToCart(sweet)}
                     disabled={sweet.quantity === 0 || orderPending}
                     size="lg"
-                    className="w-full bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 disabled:opacity-50 text-lg py-6"
+                    className="w-full bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 disabled:opacity-50 text-lg py-6"
                   >
                     <Plus className="w-5 h-5 mr-2" />
                     Add to Order
