@@ -9,7 +9,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string; // e.g., ORD001
-  token: bigint;
+  token: number; // Serialized as number for JSON response
   status: "Pending" | "Completed";
   items: OrderItem[];
   total: number;
@@ -18,7 +18,7 @@ export interface Order {
 }
 
 export interface CreateOrderRequest {
-  token: number;
+  token: number | string; // Can accept number or string, will be converted to BigInt
   items: {
     sweetId: number;
     quantity: number;
