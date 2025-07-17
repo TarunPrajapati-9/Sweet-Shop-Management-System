@@ -165,7 +165,7 @@ The client will be running at http://localhost:3000
 
 ###  Running the Client
 
-`ash
+`bash
 cd client
 
 # Development
