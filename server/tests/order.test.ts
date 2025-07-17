@@ -584,26 +584,6 @@ describe("Order API - Comprehensive Test Suite", () => {
       testOrderId = response.body.data.id;
     });
 
-    it("should update order status to Preparing", async () => {
-      const response = await request(app)
-        .patch(`/orders/${testOrderId}/status`)
-        .send({ status: "Preparing" })
-        .expect(200);
-
-      expect(response.body.success).toBe(true);
-      expect(response.body.message).toBe("Order status updated successfully");
-      expect(response.body.data.status).toBe("Preparing");
-    });
-
-    it("should update order status to Ready", async () => {
-      const response = await request(app)
-        .patch(`/orders/${testOrderId}/status`)
-        .send({ status: "Ready" })
-        .expect(200);
-
-      expect(response.body.data.status).toBe("Ready");
-    });
-
     it("should update order status to Completed", async () => {
       const response = await request(app)
         .patch(`/orders/${testOrderId}/status`)
@@ -675,7 +655,7 @@ describe("Order API - Comprehensive Test Suite", () => {
     it("should return error for non-existent order", async () => {
       const response = await request(app)
         .patch("/orders/ORD999/status")
-        .send({ status: "Preparing" })
+        .send({ status: "Completed" })
         .expect(404);
 
       expect(response.body.success).toBe(false);
@@ -691,7 +671,7 @@ describe("Order API - Comprehensive Test Suite", () => {
 
       const updateResponse = await request(app)
         .patch(`/orders/${testOrderId}/status`)
-        .send({ status: "Ready" })
+        .send({ status: "Completed" })
         .expect(200);
 
       const updatedOrder = updateResponse.body.data;
@@ -700,7 +680,7 @@ describe("Order API - Comprehensive Test Suite", () => {
       expect(updatedOrder.token).toBe(originalOrder.token);
       expect(updatedOrder.total).toBe(originalOrder.total);
       expect(updatedOrder.items.length).toBe(originalOrder.items.length);
-      expect(updatedOrder.status).toBe("Ready");
+      expect(updatedOrder.status).toBe("Completed");
       expect(updatedOrder.status).not.toBe(originalOrder.status);
     });
 
@@ -717,7 +697,7 @@ describe("Order API - Comprehensive Test Suite", () => {
 
       const updateResponse = await request(app)
         .patch(`/orders/${testOrderId}/status`)
-        .send({ status: "Ready" })
+        .send({ status: "Completed" })
         .expect(200);
 
       const updatedOrder = updateResponse.body.data;
@@ -888,16 +868,10 @@ describe("Order API - Comprehensive Test Suite", () => {
       const orderId = createResponse.body.data.id;
       expect(createResponse.body.data.status).toBe("Pending");
 
-      // 2. Update to Preparing
+      // Update to Completed
       await request(app)
         .patch(`/orders/${orderId}/status`)
-        .send({ status: "Preparing" })
-        .expect(200);
-
-      // 3. Update to Ready
-      await request(app)
-        .patch(`/orders/${orderId}/status`)
-        .send({ status: "Ready" })
+        .send({ status: "Completed" })
         .expect(200);
 
       // 4. Update to Completed
@@ -918,7 +892,7 @@ describe("Order API - Comprehensive Test Suite", () => {
 
     it("should handle multiple concurrent orders correctly", async () => {
       // Create orders sequentially to avoid database conflicts
-      const responses = [];
+      const responses: any[] = [];
 
       for (let i = 0; i < 3; i++) {
         const response = await request(app)
@@ -926,7 +900,8 @@ describe("Order API - Comprehensive Test Suite", () => {
           .send({
             token: 16000 + i,
             items: [{ sweetId: testSweetId1, quantity: 1 }],
-          });
+          })
+          .expect(201);
         responses.push(response);
       }
 
