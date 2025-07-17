@@ -85,26 +85,6 @@
 | **CORS** | 2.8.5 | Cross-origin requests |
 | **Nodemon** | 3.1.10 | Development server |
 
-##  Client Application
-
-###  Running the Client
-
-`bash
-cd client
-
-# Development
-bun run dev          # Start development server
-bun run build        # Build for production
-bun run start        # Start production server
-bun run lint         # Run ESLint
-
-# Using npm
-npm run dev
-npm run build
-npm run start
-npm run lint
-`
-
 ##  Database Schema
 
 ###  Entity Relationship Diagram
