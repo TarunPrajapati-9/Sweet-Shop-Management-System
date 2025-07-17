@@ -11,7 +11,7 @@ datasource db {
 model Sweet {
   id        Int     @id @default(autoincrement())
   name      String  @unique
-  category  String
+  category  SweetCategory
   price     Float
   quantity  Float
   createdAt DateTime @default(now())
@@ -53,4 +53,17 @@ model OrderItem {
 enum OrderStatus {
   Pending
   Completed
+}
+
+enum SweetCategory {
+  MilkBased         // e.g., Rasgulla, Gulab Jamun
+  NutBased          // e.g., Kaju Katli, Badam Barfi
+  VegetableBased    // e.g., Gajar Halwa, Lauki Halwa
+  FlourBased        // e.g., Ladoo, Jalebi
+  Fried             // e.g., Imarti, Balushahi
+  DryFruitBased     // e.g., Dry Fruit Roll
+  ChocolateBased    // e.g., Choco Barfi
+  FruitBased        // e.g., Pineapple Halwa
+  CoconutBased      // e.g., Nariyal Ladoo
+  Fusion            // e.g., Cheesecake Barfi
 }
