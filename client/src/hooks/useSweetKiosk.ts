@@ -33,7 +33,7 @@ export const useSweetKiosk = () => {
       return parseInt(
         window.crypto.randomUUID().replace(/-/g, "").slice(0, 8),
         16
-      );
+      ).toString();
     } else {
       // Fallback: Use timestamp + random + performance.now() for better uniqueness
       const timestamp = Date.now();
@@ -49,7 +49,7 @@ export const useSweetKiosk = () => {
           0,
           10
         )
-      );
+      ).toString();
     }
   });
   const [orderPlaced, setOrderPlaced] = useState(false);
@@ -65,7 +65,7 @@ export const useSweetKiosk = () => {
       return parseInt(
         window.crypto.randomUUID().replace(/-/g, "").slice(0, 8),
         16
-      );
+      ).toString();
     } else {
       const timestamp = Date.now();
       const random = Math.floor(Math.random() * 10000);
@@ -80,7 +80,7 @@ export const useSweetKiosk = () => {
           0,
           10
         )
-      );
+      ).toString();
     }
   };
 

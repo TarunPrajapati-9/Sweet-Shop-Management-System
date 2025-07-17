@@ -37,7 +37,7 @@ interface OrderItem {
 
 interface Order {
   id: string;
-  token: number;
+  token: string;
   status: string;
   total: number;
   createdAt: string;
@@ -60,7 +60,7 @@ export default function OrdersPage() {
 
   // Search by token mutation
   const { mutate: searchByTokenMutate, isPending } = useMutation({
-    mutationFn: (token: number) => getOrderByToken(token),
+    mutationFn: (token: string) => getOrderByToken(token),
     onSuccess: (response) => {
       if (response?.success && response?.data) {
         // getOrderByToken returns a single order, so wrap it in an array
@@ -111,7 +111,7 @@ export default function OrdersPage() {
           if (isSearchMode && searchToken) {
             const tokenNumber = parseInt(searchToken.trim());
             if (!isNaN(tokenNumber)) {
-              searchByTokenMutate(tokenNumber);
+              searchByTokenMutate(tokenNumber.toString());
             }
           }
         } else {
@@ -180,7 +180,7 @@ export default function OrdersPage() {
       return;
     }
 
-    searchByTokenMutate(tokenNumber);
+    searchByTokenMutate(tokenNumber.toString());
   };
 
   const handleStatusUpdate = (orderId: string, newStatus: string) => {

@@ -19,7 +19,7 @@ export async function addSweet(sweetData: {
 }
 
 export async function createOrder(orderData: {
-  token: number;
+  token: string;
   items: Array<{
     sweetId: number;
     quantity: number;

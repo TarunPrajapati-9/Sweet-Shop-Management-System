@@ -17,7 +17,7 @@ export interface Sweet {
 
 export interface Order {
   id: string;
-  token: number;
+  token: string;
   items: OrderItem[];
   status: OrderStatus;
   totalPrice: number;
@@ -32,7 +32,7 @@ export enum OrderStatus {
 }
 
 export interface CreateOrderRequest {
-  token: number;
+  token: string;
   items: Array<{
     sweetId: number;
     quantity: number;

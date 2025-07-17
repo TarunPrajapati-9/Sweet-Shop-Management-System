@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 
 interface OrderSuccessProps {
   currentOrderId: string;
-  userToken: number;
+  userToken: string;
   onStartNewOrder: () => void;
 }
 

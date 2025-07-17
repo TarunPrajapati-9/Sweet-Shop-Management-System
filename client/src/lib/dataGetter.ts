@@ -52,7 +52,7 @@ export async function getOrderById(id: string) {
   }
 }
 
-export async function getOrderByToken(token: number) {
+export async function getOrderByToken(token: string) {
   try {
     const { data } = await axios.get(
       `${process.env.NEXT_PUBLIC_BACKEND_URL}/orders/token/${token}`
