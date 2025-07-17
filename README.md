@@ -145,23 +145,6 @@ erDiagram
     }
 `
 
-###  Enums
-
-**SweetCategory**
-`	ypescript
-enum SweetCategory {
-  MilkBased, NutBased, VegetableBased, FlourBased, Fried,
-  DryFruitBased, ChocolateBased, FruitBased, CoconutBased, Fusion
-}
-`
-
-**OrderStatus**
-`	ypescript
-enum OrderStatus {
-  Pending, Completed
-}
-`
-
 ##  API Endpoints
 
 ###  Sweet Management
