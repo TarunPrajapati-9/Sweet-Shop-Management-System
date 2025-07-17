@@ -205,18 +205,23 @@ export default function OrdersPage() {
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
       {/* Header */}
       <header className="bg-white/90 backdrop-blur-md border-b border-orange-200">
-        <div className="container mx-auto px-4 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Link href="/">
-                <Button variant="outline" size="lg">
-                  <ArrowLeft className="w-5 h-5 mr-2" />
-                  Back to Menu
+        <div className="container mx-auto px-4 py-4 sm:py-6">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:space-x-4">
+              <Link href="/owner">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-fit sm:size-lg"
+                >
+                  <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                  <span className="hidden sm:inline">Back to Menu</span>
+                  <span className="sm:hidden">Menu</span>
                 </Button>
               </Link>
               <div className="flex items-center space-x-2">
-                <Package className="w-8 h-8 text-orange-600" />
-                <h1 className="text-3xl font-bold text-orange-900">
+                <Package className="w-6 h-6 sm:w-8 sm:h-8 text-orange-600" />
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-orange-900">
                   Order Status
                 </h1>
               </div>

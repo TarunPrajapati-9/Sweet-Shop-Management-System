@@ -33,13 +33,14 @@ export const Cart: React.FC<CartProps> = ({
     <Sheet>
       <SheetTrigger asChild>
         <Button
-          size="lg"
-          className="relative bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700"
+          size="sm"
+          className="relative bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 sm:size-lg text-xs sm:text-sm px-2 sm:px-4"
         >
-          <ShoppingCart className="w-5 h-5 mr-2" />
-          View Order
+          <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5 mr-1 sm:mr-2" />
+          <span className="hidden sm:inline">View Order</span>
+          <span className="sm:hidden">Cart</span>
           {totalItems > 0 && (
-            <Badge className="absolute -top-2 -right-2 bg-yellow-500 text-black">
+            <Badge className="absolute -top-2 -right-2 bg-yellow-500 text-black text-xs">
               {totalItems}
             </Badge>
           )}
