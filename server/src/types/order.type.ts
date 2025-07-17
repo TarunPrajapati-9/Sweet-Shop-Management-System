@@ -9,7 +9,7 @@ export interface OrderItem {
 
 export interface Order {
   id: string; // e.g., ORD001
-  token: number; // Serialized as number for JSON response
+  token: string;
   status: "Pending" | "Completed";
   items: OrderItem[];
   total: number;
@@ -18,7 +18,7 @@ export interface Order {
 }
 
 export interface CreateOrderRequest {
-  token: number | string; // Can accept number or string, will be converted to BigInt
+  token: string;
   items: {
     sweetId: number;
     quantity: number;
@@ -32,9 +32,9 @@ export interface UpdateOrderStatusRequest {
 // Prisma types for database operations
 export interface OrderWithItems {
   id: string;
-  token: bigint;
+  token: string;
   status: "Pending" | "Completed";
-  total: number;
+  total: string;
   createdAt: Date;
   updatedAt: Date;
   items: {

@@ -23,7 +23,7 @@ model Sweet {
 
 model Order {
   id        String   @id // Unique order ID like ORD001
-  token     BigInt   @unique
+  token     String   @unique
   status    OrderStatus @default(Pending)
   total     Float
   createdAt DateTime @default(now())

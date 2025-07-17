@@ -14,7 +14,7 @@ const serializeOrder = (order: any) => {
 
   return {
     ...order,
-    token: Number(order.token), // Convert BigInt to number
+    token: order.token,
     items: order.items?.map((item: any) => ({
       ...item,
       sweet: item.sweet
@@ -99,7 +99,7 @@ export const createOrder = async (
 
     // Check if token is already in use
     const existingOrder = await prisma.order.findUnique({
-      where: { token: BigInt(token) },
+      where: { token: token },
     });
 
     if (existingOrder) {
@@ -161,7 +161,7 @@ export const createOrder = async (
       const newOrder = await tx.order.create({
         data: {
           id: orderId,
-          token: BigInt(token),
+          token: token,
           total,
           items: {
             create: orderItems,
@@ -295,15 +295,8 @@ export const getOrderByToken = async (
   try {
     const { token } = req.params;
 
-    // Validate token is a valid number
-    const tokenNumber = parseInt(token);
-    if (isNaN(tokenNumber) || tokenNumber < 0) {
-      res.status(404).json(createResponse(false, "Order not found", null));
-      return;
-    }
-
     const order = await prisma.order.findUnique({
-      where: { token: BigInt(tokenNumber) },
+      where: { token: token },
       include: {
         items: {
           include: {
