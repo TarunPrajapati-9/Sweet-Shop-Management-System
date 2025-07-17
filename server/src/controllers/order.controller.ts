@@ -7,6 +7,25 @@ import {
 import { createResponse } from "../utils/response";
 
 /**
+ * Converts BigInt fields to numbers in order objects for JSON serialization
+ */
+const serializeOrder = (order: any) => {
+  if (!order) return order;
+  
+  return {
+    ...order,
+    token: Number(order.token), // Convert BigInt to number
+    items: order.items?.map((item: any) => ({
+      ...item,
+      sweet: item.sweet ? {
+        ...item.sweet,
+        // Convert any BigInt fields in sweet if needed
+      } : item.sweet
+    }))
+  };
+};
+
+/**
  * Generates a unique order ID in the format ORD001, ORD002, etc.
  * Implements retry logic for concurrent safety and fallback mechanism.
  *
@@ -78,7 +97,7 @@ export const createOrder = async (
 
     // Check if token is already in use
     const existingOrder = await prisma.order.findUnique({
-      where: { token },
+      where: { token: BigInt(token) },
     });
 
     if (existingOrder) {
@@ -140,7 +159,7 @@ export const createOrder = async (
       const newOrder = await tx.order.create({
         data: {
           id: orderId,
-          token,
+          token: BigInt(token),
           total,
           items: {
             create: orderItems,
@@ -170,9 +189,12 @@ export const createOrder = async (
       return newOrder;
     });
 
+    // Serialize the order for JSON response
+    const serializedOrder = serializeOrder(order);
+
     res
       .status(201)
-      .json(createResponse(true, "Order created successfully", order));
+      .json(createResponse(true, "Order created successfully", serializedOrder));
   } catch (error) {
     console.error("Error creating order:", error);
     res.status(500).json(createResponse(false, "Failed to create order", null));
@@ -199,7 +221,10 @@ export const getOrders = async (req: Request, res: Response): Promise<void> => {
       orderBy: { createdAt: "desc" },
     });
 
-    res.json(createResponse(true, "Orders retrieved successfully", orders));
+    // Serialize all orders for JSON response
+    const serializedOrders = orders.map(order => serializeOrder(order));
+
+    res.json(createResponse(true, "Orders retrieved successfully", serializedOrders));
   } catch (error) {
     console.error("Error getting orders:", error);
     res
@@ -237,7 +262,10 @@ export const getOrderById = async (
       return;
     }
 
-    res.json(createResponse(true, "Order retrieved successfully", order));
+    // Serialize the order for JSON response
+    const serializedOrder = serializeOrder(order);
+
+    res.json(createResponse(true, "Order retrieved successfully", serializedOrder));
   } catch (error) {
     console.error("Error getting order:", error);
     res
@@ -267,7 +295,7 @@ export const getOrderByToken = async (
     }
 
     const order = await prisma.order.findUnique({
-      where: { token: tokenNumber },
+      where: { token: BigInt(tokenNumber) },
       include: {
         items: {
           include: {
@@ -282,7 +310,10 @@ export const getOrderByToken = async (
       return;
     }
 
-    res.json(createResponse(true, "Order retrieved successfully", order));
+    // Serialize the order for JSON response
+    const serializedOrder = serializeOrder(order);
+
+    res.json(createResponse(true, "Order retrieved successfully", serializedOrder));
   } catch (error) {
     console.error("Error getting order:", error);
     res
@@ -328,7 +359,10 @@ export const updateOrderStatus = async (
       },
     });
 
-    res.json(createResponse(true, "Order status updated successfully", order));
+    // Serialize the order for JSON response
+    const serializedOrder = serializeOrder(order);
+
+    res.json(createResponse(true, "Order status updated successfully", serializedOrder));
   } catch (error: any) {
     console.error("Error updating order status:", error);
     if (error.code === "P2025") {
