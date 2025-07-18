@@ -42,11 +42,11 @@ export function OrderStatusUpdate({
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
-        return <CheckCircle className="w-4 h-4" />;
+        return <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />;
       case "pending":
-        return <Clock className="w-4 h-4" />;
+        return <Clock className="w-3 h-3 sm:w-4 sm:h-4" />;
       default:
-        return <Clock className="w-4 h-4" />;
+        return <Clock className="w-3 h-3 sm:w-4 sm:h-4" />;
     }
   };
 
@@ -67,16 +67,22 @@ export function OrderStatusUpdate({
         <Button
           variant="outline"
           size="sm"
-          className={`${getStatusColor(currentStatus)} border-none`}
+          className={`${getStatusColor(
+            currentStatus
+          )} border-none text-xs sm:text-sm px-2 py-1 sm:px-3 sm:py-2 w-full sm:w-auto min-w-0 truncate`}
           disabled={isUpdating}
         >
-          {getStatusIcon(currentStatus)}
-          <span className="ml-2">Update Status</span>
+          <span className="flex items-center min-w-0">
+            {getStatusIcon(currentStatus)}
+            <span className="ml-1 sm:ml-2 truncate">Update</span>
+          </span>
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-sm sm:max-w-md mx-4">
         <DialogHeader>
-          <DialogTitle>Update Order Status</DialogTitle>
+          <DialogTitle className="text-lg sm:text-xl">
+            Update Order Status
+          </DialogTitle>
         </DialogHeader>
         <div className="space-y-4">
           <div>
@@ -109,7 +115,7 @@ export function OrderStatusUpdate({
               </SelectContent>
             </Select>
           </div>
-          <div className="flex gap-2 pt-4">
+          <div className="flex flex-col gap-2 pt-4 sm:flex-row">
             <Button
               variant="outline"
               onClick={() => setIsDialogOpen(false)}

@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
-import { toast } from "@/hooks/use-toast";
+import { toast, useToast } from "@/hooks/use-toast";
 import { Eye, EyeOff, Lock } from "lucide-react";
 import Link from "next/link";
 
@@ -17,23 +17,63 @@ export const PasswordLogin: React.FC<PasswordLoginProps> = ({
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const toastTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const { dismiss } = useToast();
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+      }
+    };
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
 
+    // Clear any pending error toast
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = null;
+    }
+
+    // Dismiss all existing toasts first
+    dismiss();
+
     const isValid = onAuthenticate(password);
 
     if (!isValid) {
-      toast({
-        title: "Access Denied",
-        description: "Incorrect password. Please try again.",
-        variant: "destructive",
-      });
+      setIsLoading(false);
       setPassword("");
+      
+      // Show error toast immediately with a small delay to ensure dismiss has processed
+      toastTimeoutRef.current = setTimeout(() => {
+        toast({
+          title: "Access Denied",
+          description: "Incorrect password. Please try again.",
+          variant: "destructive",
+        });
+        toastTimeoutRef.current = null;
+      }, 50);
+    } else {
+      setIsLoading(false);
+      // Clear any pending error toasts on successful login
+      if (toastTimeoutRef.current) {
+        clearTimeout(toastTimeoutRef.current);
+        toastTimeoutRef.current = null;
+      }
     }
+  };
 
-    setIsLoading(false);
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+    // Clear any pending error toast when user starts typing
+    if (toastTimeoutRef.current) {
+      clearTimeout(toastTimeoutRef.current);
+      toastTimeoutRef.current = null;
+    }
   };
 
   return (
@@ -48,6 +88,14 @@ export const PasswordLogin: React.FC<PasswordLoginProps> = ({
               Owner Dashboard Access
             </CardTitle>
             <p className="text-gray-600">Enter your password to continue</p>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-sm">
+              <p className="text-blue-800 font-medium">
+                💡 Demo Password:{" "}
+                <span className="font-mono bg-blue-100 px-2 py-1 rounded">
+                  admin123
+                </span>
+              </p>
+            </div>
           </CardHeader>
           <CardContent className="space-y-6">
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -58,7 +106,7 @@ export const PasswordLogin: React.FC<PasswordLoginProps> = ({
                     id="password"
                     type={showPassword ? "text" : "password"}
                     value={password}
-                    onChange={(e) => setPassword(e.target.value)}
+                    onChange={handlePasswordChange}
                     placeholder="Enter owner password"
                     className="pr-12"
                     required

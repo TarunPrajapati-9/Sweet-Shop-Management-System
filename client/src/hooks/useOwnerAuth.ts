@@ -15,7 +15,7 @@ export const useOwnerAuth = () => {
   }, []);
 
   const authenticate = (inputPassword: string) => {
-    const correctPassword = process.env.NEXT_PUBLIC_OWNER_PASSWORD;
+    const correctPassword = process.env.NEXT_PUBLIC_OWNER_PASSWORD || "admin123";
 
     if (inputPassword === correctPassword) {
       setIsAuthenticated(true);

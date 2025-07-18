@@ -152,11 +152,11 @@ export default function OrdersPage() {
   const getStatusColor = (status: string) => {
     switch (status.toLowerCase()) {
       case "completed":
-        return "bg-green-100 text-green-800 text-lg px-4 py-2";
+        return "bg-green-100 text-green-800 text-sm sm:text-lg px-2 py-1 sm:px-4 sm:py-2";
       case "pending":
-        return "bg-yellow-100 text-yellow-800 text-lg px-4 py-2";
+        return "bg-yellow-100 text-yellow-800 text-sm sm:text-lg px-2 py-1 sm:px-4 sm:py-2";
       default:
-        return "bg-yellow-100 text-yellow-800 text-lg px-4 py-2";
+        return "bg-yellow-100 text-yellow-800 text-sm sm:text-lg px-2 py-1 sm:px-4 sm:py-2";
     }
   };
 
@@ -232,7 +232,7 @@ export default function OrdersPage() {
 
       <div className="container mx-auto px-4 py-8">
         {/* Search */}
-        <Card className="mb-8 bg-white border-2">
+        <Card className="mb-6 sm:mb-8 bg-white border-2">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-xl">
               <Search className="w-6 h-6" />
@@ -240,31 +240,33 @@ export default function OrdersPage() {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex space-x-4">
+            <div className="flex flex-col space-y-4 sm:flex-row sm:space-x-4 sm:space-y-0">
               <Input
                 placeholder="Enter your token number..."
                 value={searchToken}
                 onChange={(e) => setSearchToken(e.target.value)}
-                className="flex-1 text-lg py-6"
+                className="flex-1 text-base sm:text-lg py-4 sm:py-6"
               />
-              <Button
-                onClick={searchByToken}
-                disabled={isPending}
-                size="lg"
-                className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 px-8"
-              >
-                {isPending ? "Searching..." : "Check Status"}
-              </Button>
-              {isSearchMode && (
+              <div className="flex flex-col space-y-2 sm:flex-row sm:space-x-4 sm:space-y-0">
                 <Button
-                  onClick={showAllOrders}
-                  variant="outline"
+                  onClick={searchByToken}
+                  disabled={isPending}
                   size="lg"
-                  className="px-8"
+                  className="bg-gradient-to-r from-orange-500 to-amber-600 hover:from-orange-600 hover:to-amber-700 px-6 sm:px-8"
                 >
-                  Show All Orders
+                  {isPending ? "Searching..." : "Check Status"}
                 </Button>
-              )}
+                {isSearchMode && (
+                  <Button
+                    onClick={showAllOrders}
+                    variant="outline"
+                    size="lg"
+                    className="px-6 sm:px-8"
+                  >
+                    Show All Orders
+                  </Button>
+                )}
+              </div>
             </div>
           </CardContent>
         </Card>
@@ -302,31 +304,33 @@ export default function OrdersPage() {
                 className="bg-white border-2 hover:shadow-lg transition-shadow"
               >
                 <CardHeader>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-4">
+                  <div className="flex flex-col space-y-4 sm:flex-row sm:items-center sm:justify-between sm:space-y-0">
+                    <div className="flex items-center space-x-3 sm:space-x-4">
                       {getStatusIcon(order.status)}
                       <div>
-                        <CardTitle className="text-2xl">
+                        <CardTitle className="text-lg sm:text-2xl">
                           Order {order.id}
                         </CardTitle>
-                        <p className="text-lg text-gray-600">
+                        <p className="text-sm sm:text-lg text-gray-600">
                           Token: {order.token}
                         </p>
                       </div>
                     </div>
-                    <div className="text-right space-y-2">
-                      <div className="flex items-center space-x-2">
+                    <div className="flex flex-col space-y-3 sm:text-right sm:space-y-2">
+                      <div className="flex flex-col space-y-2 sm:flex-row sm:items-center sm:space-x-2 sm:space-y-0">
                         <Badge className={getStatusColor(order.status)}>
                           {order.status}
                         </Badge>
-                        <OrderStatusUpdate
-                          orderId={order.id}
-                          currentStatus={order.status}
-                          onStatusUpdate={handleStatusUpdate}
-                          isUpdating={isStatusUpdating}
-                        />
+                        <div className="w-full sm:w-auto">
+                          <OrderStatusUpdate
+                            orderId={order.id}
+                            currentStatus={order.status}
+                            onStatusUpdate={handleStatusUpdate}
+                            isUpdating={isStatusUpdating}
+                          />
+                        </div>
                       </div>
-                      <p className="text-sm text-gray-600">
+                      <p className="text-xs sm:text-sm text-gray-600">
                         {formatDate(order.createdAt)}
                       </p>
                     </div>
@@ -337,17 +341,17 @@ export default function OrdersPage() {
                     {order.items.map((item: OrderItem, index: number) => (
                       <div
                         key={index}
-                        className="flex items-center justify-between py-3 border-b last:border-b-0"
+                        className="flex flex-col space-y-2 py-3 border-b last:border-b-0 sm:flex-row sm:items-center sm:justify-between sm:space-y-0"
                       >
                         <div className="flex-1">
-                          <p className="font-semibold text-lg">
+                          <p className="font-semibold text-base sm:text-lg">
                             {item.sweet?.name || item.name}
                           </p>
-                          <p className="text-gray-600">
+                          <p className="text-sm sm:text-base text-gray-600">
                             Quantity: {item.quantity}
                           </p>
                         </div>
-                        <p className="font-bold text-lg">
+                        <p className="font-bold text-base sm:text-lg text-right">
                           ₹
                           {(
                             (item.sweet?.price || item.price) * item.quantity
@@ -356,7 +360,7 @@ export default function OrdersPage() {
                       </div>
                     ))}
                     <Separator />
-                    <div className="flex justify-between items-center font-bold text-2xl">
+                    <div className="flex justify-between items-center font-bold text-lg sm:text-2xl">
                       <span>Total</span>
                       <span className="text-pink-600">
                         ₹{order.total.toFixed(2)}
